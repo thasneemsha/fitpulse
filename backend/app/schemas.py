@@ -19,3 +19,31 @@ class UserResponse(BaseModel):
     # This tells Pydantic to read data directly from the SQLAlchemy model
     class Config:
         from_attributes = True
+
+# Workout Schemas
+class WorkoutCreate(BaseModel):
+    exercise_name: str
+    sets: int
+    reps: int
+    weight: float
+
+class WorkoutResponse(WorkoutCreate):
+    id: int
+    user_id: int
+    logged_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# Body Metric Schemas
+class BodyMetricCreate(BaseModel):
+    weight: float
+    body_fat_percentage: float | None = None # Optional field
+
+class BodyMetricResponse(BodyMetricCreate):
+    id: int
+    user_id: int
+    recorded_at: datetime
+
+    class Config:
+        from_attributes = True

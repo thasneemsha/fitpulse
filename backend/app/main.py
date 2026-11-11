@@ -1,10 +1,11 @@
+
 from fastapi import FastAPI
-from app.routers import users # Import the router we just created
+from app.routers import users, workouts # <-- Import workouts
 
 app = FastAPI(title="FitPulse API", version="0.1.0")
 
-# Plug the auth routes into the main app
 app.include_router(users.router)
+app.include_router(workouts.router)
 
 @app.get("/health")
 def health_check():
