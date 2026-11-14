@@ -9,3 +9,4 @@ python-jose[cryptography]==3.3.0
 email-validator
 
 google-genai==0.3.0
+python-multipart==0.0.33

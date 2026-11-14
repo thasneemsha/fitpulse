@@ -1,3 +1,4 @@
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app import models, schemas, auth
@@ -40,22 +41,19 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 # 2. LOGIN ENDPOINT
 @router.post("/login")
-def login_user(user_credentials: schemas.UserCreate, db: Session = Depends(get_db)):
-    # Find the user by email
-    user = db.query(models.User).filter(models.User.email == user_credentials.email).first()
+def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # OAuth2PasswordRequestForm stores the email in the 'username' field
+    user = db.query(models.User).filter(models.User.email == form_data.username).first()
     
-    # If user doesn't exist, or password is wrong, throw a 401 Unauthorized error
-    if not user or not auth.verify_password(user_credentials.password, user.hashed_password):
+    if not user or not auth.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # If login is successful, create a JWT token containing their email and ID
     access_token = auth.create_access_token(
         data={"sub": user.email, "id": user.id}
     )
     
-    # Return the token to the user
     return {"access_token": access_token, "token_type": "bearer"}

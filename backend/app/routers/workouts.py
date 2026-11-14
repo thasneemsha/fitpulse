@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app import models, schemas, auth
 from app.database import get_db
+from fastapi import HTTPException
 
 router = APIRouter(
     prefix="/workouts",
@@ -15,11 +16,13 @@ router = APIRouter(
 def create_workout(
     workout: schemas.WorkoutCreate, 
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(auth.get_current_user) # <-- PROTECTS THE ROUTE!
+    current_user: models.User = Depends(auth.get_current_user)
 ):
-    # Create the workout and automatically attach the logged-in user's ID
+    # Create the workout manually since the schema changed to a flexible JSON model
     new_workout = models.Workout(
-        **workout.model_dump(), 
+        workout_type=workout.workout_type,
+        exercise_name=workout.exercise_name,
+        details=workout.details,
         user_id=current_user.id
     )
     db.add(new_workout)
@@ -32,9 +35,27 @@ def get_my_workouts(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user)
 ):
-    # Only return workouts where the user_id matches the logged-in user
     workouts = db.query(models.Workout).filter(models.Workout.user_id == current_user.id).all()
     return workouts
+
+@router.delete("/{workout_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_workout(
+    workout_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    # Find the workout, ensuring it belongs to the current user
+    workout = db.query(models.Workout).filter(
+        models.Workout.id == workout_id, 
+        models.Workout.user_id == current_user.id
+    ).first()
+    
+    if not workout:
+        raise HTTPException(status_code=404, detail="Workout not found")
+        
+    db.delete(workout)
+    db.commit()
+    return None
 
 # --- BODY METRIC ENDPOINTS ---
 

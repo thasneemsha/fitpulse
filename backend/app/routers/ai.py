@@ -10,7 +10,6 @@ router = APIRouter(
     tags=["AI Insights"]
 )
 
-# Initialize the Gemini client
 client = genai.Client(api_key=settings.gemini_api_key)
 
 @router.get("/insights")
@@ -18,7 +17,6 @@ def get_ai_insights(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user)
 ):
-    # 1. Fetch the user's last 10 workouts from the database
     workouts = db.query(models.Workout).filter(
         models.Workout.user_id == current_user.id
     ).order_by(models.Workout.logged_at.desc()).limit(10).all()
@@ -26,12 +24,12 @@ def get_ai_insights(
     if not workouts:
         raise HTTPException(status_code=400, detail="Not enough workout data to analyze. Log some workouts first!")
 
-    # 2. Format the workout data into a string for the AI to read
+    # NEW: Format the flexible JSON details into a readable string for the AI
     workout_text = ""
     for w in workouts:
-        workout_text += f"- {w.exercise_name}: {w.sets} sets x {w.reps} reps at {w.weight} lbs\n"
+        details_str = ", ".join([f"{key}: {val}" for key, val in w.details.items()])
+        workout_text += f"- {w.exercise_name} ({w.workout_type}): {details_str}\n"
 
-    # 3. Create the prompt (instructions) for the AI
     prompt = f"""
     You are an expert personal trainer. Here is the last workout history for a user:
     {workout_text}
@@ -40,15 +38,13 @@ def get_ai_insights(
     to help them improve based on this data. Be encouraging and professional.
     """
 
-    # 4. Send the prompt to Gemini and get the response
     try:
         response = client.models.generate_content(
-            model='gemini-3.6-flash',
+            model='gemini-3.6-flash', 
             contents=prompt,
         )
         ai_message = response.text
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
 
-    # 5. Return the AI's response
     return {"insight": ai_message}

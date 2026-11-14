@@ -3,6 +3,7 @@
 
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import Dict, Any
 
 # This is what we expect when a user REGISTERS or LOGS IN
 class UserCreate(BaseModel):
@@ -22,28 +23,25 @@ class UserResponse(BaseModel):
 
 # Workout Schemas
 class WorkoutCreate(BaseModel):
+    workout_type: str
     exercise_name: str
-    sets: int
-    reps: int
-    weight: float
+    details: Dict[str, Any] # Accepts any JSON structure
 
 class WorkoutResponse(WorkoutCreate):
     id: int
     user_id: int
     logged_at: datetime
-
     class Config:
         from_attributes = True
 
-# Body Metric Schemas
 class BodyMetricCreate(BaseModel):
     weight: float
-    body_fat_percentage: float | None = None # Optional field
+    body_fat_percentage: float | None = None
 
+# Body Metric Schemas
 class BodyMetricResponse(BodyMetricCreate):
     id: int
     user_id: int
     recorded_at: datetime
-
     class Config:
         from_attributes = True
