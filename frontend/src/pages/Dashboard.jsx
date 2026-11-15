@@ -227,7 +227,6 @@ export default function Dashboard() {
       {/* Navbar */}
       <div className="w-full flex justify-between items-center mb-6 bg-[#151C2C] px-6 py-4 rounded-2xl border border-gray-800">
         <div className="flex items-center gap-3">
-          <HeartPulse className="text-red-500 w-6 h-6" />
           <h1 className="text-xl font-bold text-white tracking-wide">FitPulse</h1>
         </div>
         <button onClick={() => { localStorage.removeItem('token'); navigate('/'); }} className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-400 transition">
@@ -243,7 +242,7 @@ export default function Dashboard() {
           {/* Top Banner with Calories */}
           <div className="bg-gradient-to-r from-[#1A233A] to-[#12182B] text-white p-6 rounded-2xl border border-gray-800 flex justify-between items-center shadow-lg">
             <div>
-              <h2 className="text-2xl font-bold mb-1">Welcome Back! 👋</h2>
+              <h2 className="text-2xl font-bold mb-1">Welcome Back! </h2>
               <p className="text-sm text-gray-400 mb-4">Ready to crush your fitness goals today?</p>
               <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 text-white px-5 py-2 rounded-xl font-medium flex items-center gap-2 hover:bg-blue-500 transition text-sm">
                 <Plus className="w-4 h-4" /> Log Workout
