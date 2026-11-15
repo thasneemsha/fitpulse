@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Create an Axios instance pointing to your FastAPI backend
 const api = axios.create({
-  baseURL: 'http://localhost:8000', 
+  baseURL: API_URL, 
 });
 
 // This automatically attaches your JWT token to every request if you are logged in
