@@ -7,14 +7,12 @@ import {
 import { Activity, Dumbbell, Bike, HeartPulse, Plus, LogOut, Flame, Trash2, Copy, CheckCircle2, Circle, TrendingUp, Zap } from 'lucide-react';
 import api from '../api/axios';
 
-// --- HELPER: Calculate Calories ---
 const calculateCalories = (workout) => {
   if (workout.workout_type === 'Cardio') return (parseFloat(workout.details.time) || 0) * 10;
   if (workout.workout_type === 'Strength') return (parseFloat(workout.details.sets) || 0) * (parseFloat(workout.details.reps) || 0) * (parseFloat(workout.details.weight) || 0) * 0.05;
   return (parseFloat(workout.details.duration) || 0) * 3;
 };
 
-// --- COMPONENT: 90-Day Heatmap ---
 function Heatmap({ workouts }) {
   const days = [];
   const today = new Date();
@@ -62,7 +60,6 @@ function Heatmap({ workouts }) {
   );
 }
 
-// --- COMPONENT: Weekly Calendar ---
 function WeeklyCalendar({ workouts }) {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const today = new Date();
@@ -212,40 +209,46 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen w-screen bg-[#09090B] font-sans text-[#EDEDED] selection:bg-blue-500/30 pb-12">
       
-      {/* Compact Navbar */}
+      {/* Smaller Navbar */}
       <div className="w-full border-b border-[#27272A] bg-[#09090B]/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-[1100px] mx-auto px-6 py-3 flex justify-between items-center">
+        <div className="max-w-[1300px] mx-auto px-6 py-2 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <HeartPulse className="text-blue-500 w-5 h-5" />
-            <h1 className="text-lg font-semibold tracking-tight text-white">FitPulse</h1>
+            <HeartPulse className="text-blue-500 w-4 h-4" />
+            <h1 className="text-base font-semibold tracking-tight text-white">FitPulse</h1>
           </div>
-          <button onClick={() => { localStorage.removeItem('token'); navigate('/'); }} className="flex items-center gap-2 text-xs font-medium text-[#A1A1AA] hover:text-white transition-colors bg-[#1A1A1E] px-3 py-1.5 rounded-full border border-[#27272A]">
+          <button onClick={() => { localStorage.removeItem('token'); navigate('/'); }} className="flex items-center gap-2 text-xs font-medium text-[#A1A1AA] hover:text-white transition-colors bg-[#1A1A1E] px-3 py-1 rounded-full border border-[#27272A]">
             <LogOut className="w-3.5 h-3.5" /> Logout
           </button>
         </div>
       </div>
 
-      <div className="max-w-[1100px] mx-auto px-6 pt-8 space-y-6">
+      {/* Wider Container so it fills more screen space */}
+      <div className="max-w-[1300px] mx-auto px-6 pt-6 space-y-6">
         
-        {/* Center Hero Banner */}
+        {/* Adjusted Hero Banner */}
         <div className="flex flex-col md:flex-row gap-6">
-          <div className="flex-1 bg-gradient-to-br from-[#18181B] to-[#09090B] p-8 rounded-3xl border border-[#27272A] text-center flex flex-col items-center justify-center relative overflow-hidden">
-            <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-blue-500 via-emerald-500 to-purple-500 opacity-50"></div>
-            <h2 className="text-2xl font-semibold mb-2 text-white">Good Morning 👋</h2>
-            <p className="text-sm text-[#A1A1AA] mb-6">Ready to hit your goals today?</p>
-            <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20">
-              <Plus className="w-4 h-4" /> Log Workout
-            </button>
+          
+          <div className="flex-1 bg-gradient-to-r from-[#18181B] to-[#121214] p-6 rounded-3xl border border-[#27272A] flex flex-col justify-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 via-emerald-500 to-purple-500 opacity-60"></div>
+            
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div>
+                <h2 className="text-3xl font-bold mb-1 text-white">Welcome Back! 👋</h2>
+                <p className="text-sm text-[#A1A1AA]">Ready to crush your fitness goals today?</p>
+              </div>
+              <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl text-sm font-semibold flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20 whitespace-nowrap">
+                <Plus className="w-4 h-4" /> Log Workout
+              </button>
+            </div>
           </div>
 
-          <div className="w-full md:w-64 bg-[#121214] p-6 rounded-3xl border border-[#27272A] flex flex-col justify-center items-center text-center">
-            <Flame className="w-6 h-6 text-orange-500 mb-2" />
-            <p className="text-[10px] text-[#A1A1AA] uppercase tracking-widest font-semibold">Calories Burned</p>
+          <div className="w-full md:w-56 bg-[#121214] p-5 rounded-3xl border border-[#27272A] flex flex-col justify-center items-center text-center">
+            <Flame className="w-6 h-6 text-orange-500 mb-1" />
+            <p className="text-[10px] text-[#A1A1AA] uppercase tracking-widest font-semibold">Calories</p>
             <p className="text-3xl font-bold text-white mt-1">{Math.round(totalCalories)}</p>
           </div>
         </div>
 
-        {/* Charts Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
             <Heatmap workouts={workouts} />
@@ -256,7 +259,6 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Consistency Chart */}
           <div className="bg-[#121214] p-5 rounded-3xl border border-[#27272A]">
             <h3 className="text-sm font-medium mb-4 text-white flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-blue-500" /> Weekly Consistency
@@ -273,7 +275,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Breakdown Chart */}
           <div className="bg-[#121214] p-5 rounded-3xl border border-[#27272A] flex flex-col">
             <h3 className="text-sm font-medium mb-2 text-white flex items-center gap-2">
               <Zap className="w-4 h-4 text-yellow-500" /> Activity Breakdown
@@ -305,10 +306,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Bottom Row: Quick Start & Recent Activity */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          {/* Quick Start List */}
           <div className="md:col-span-1 bg-[#121214] p-5 rounded-3xl border border-[#27272A]">
             <h3 className="text-sm font-medium mb-4 text-white">Quick Start</h3>
             <div className="space-y-2">
@@ -327,7 +325,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* AI Insight */}
           <div className="md:col-span-2 bg-gradient-to-br from-[#18181B] to-[#121214] p-5 rounded-3xl border border-[#27272A] flex flex-col">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-sm font-medium flex items-center gap-2 text-white">
@@ -345,10 +342,8 @@ export default function Dashboard() {
               </div>
             )}
           </div>
-
         </div>
 
-        {/* Recent Activity List Full Width */}
         <div className="bg-[#121214] p-5 rounded-3xl border border-[#27272A]">
           <h3 className="text-sm font-medium mb-4 text-white">Recent Activity</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -383,7 +378,6 @@ export default function Dashboard() {
 
       </div>
 
-      {/* MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
           <div className="bg-[#121214] rounded-[28px] p-6 max-w-sm w-full shadow-2xl border border-[#27272A]">
