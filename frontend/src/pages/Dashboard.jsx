@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  LineChart, Line, PieChart, Pie, Cell 
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, 
+  PieChart, Pie, Cell 
 } from 'recharts';
 import { Activity, Dumbbell, Bike, HeartPulse, Plus, LogOut, Flame, Trash2, Copy, CheckCircle2, Circle, TrendingUp, Zap } from 'lucide-react';
 import api from '../api/axios';
@@ -13,14 +13,25 @@ const calculateCalories = (workout) => {
   return (parseFloat(workout.details.duration) || 0) * 3;
 };
 
+// --- NEW COMPONENT: 90-Day Heatmap with Month Labels ---
 function Heatmap({ workouts }) {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const daysOfWeek = ['', 'Mon', '', 'Wed', '', 'Fri', '']; // Align to grid
+  
   const days = [];
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  for (let i = 89; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - i);
+  // Start from the Sunday of the week 90 days ago
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - 89);
+  const dayOfWeek = startDate.getDay();
+  startDate.setDate(startDate.getDate() - dayOfWeek); // Go back to Sunday
+
+  // Generate grid dates
+  for (let i = 0; i < 91; i++) { // ~13 weeks = 91 days
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
     days.push(date);
   }
 
@@ -33,28 +44,63 @@ function Heatmap({ workouts }) {
     });
   };
 
+  // Calculate which month labels to show to avoid overlap
+  const monthLabels = [];
+  let lastMonth = -1;
+  days.forEach((date, index) => {
+    if (index % 7 === 0) { // Check only on Sundays
+      const currentMonth = date.getMonth();
+      if (currentMonth !== lastMonth) {
+        monthLabels.push({ index: Math.floor(index / 7), name: months[currentMonth] });
+        lastMonth = currentMonth;
+      }
+    }
+  });
+
   return (
     <div className="bg-[#121214] p-5 rounded-3xl border border-[#27272A]">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h3 className="text-sm font-medium text-white flex items-center gap-2">
-            <Activity className="w-4 h-4 text-blue-500" /> Consistency Map
-          </h3>
-        </div>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-sm font-medium text-white flex items-center gap-2">
+          <Activity className="w-4 h-4 text-blue-500" /> Consistency Map
+        </h3>
         <span className="text-xs text-[#52525B]">Last 90 days</span>
       </div>
       
-      <div className="grid grid-rows-7 grid-flow-col gap-1 overflow-x-auto pb-1 hide-scrollbar">
-        {days.map((date, index) => {
-          const workedOut = hasWorkoutOnDate(date);
-          return (
-            <div
-              key={index}
-              title={date.toDateString()}
-              className={`w-3.5 h-3.5 rounded-[4px] ${workedOut ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'bg-[#1A1A1E]'} hover:ring-1 hover:ring-gray-500 cursor-pointer transition-all`}
-            />
-          );
-        })}
+      <div className="flex">
+        {/* Y-Axis Labels */}
+        <div className="flex flex-col gap-1 pr-2 text-[10px] text-[#52525B] mt-6">
+          {daysOfWeek.map((day, i) => <div key={i} className="h-3.5">{day}</div>)}
+        </div>
+
+        {/* Grid */}
+        <div className="flex-1 overflow-x-auto hide-scrollbar">
+          {/* X-Axis Labels */}
+          <div className="flex gap-1 mb-2 text-[10px] text-[#52525B]">
+             {monthLabels.map((m, i) => (
+                <div key={i} style={{ width: `${(100 / 13)}%` }} className="min-w-[40px]">{m.name}</div>
+             ))}
+          </div>
+
+          <div className="grid grid-rows-7 grid-flow-col gap-1 pb-1">
+            {days.map((date, index) => {
+              const workedOut = hasWorkoutOnDate(date);
+              return (
+                <div
+                  key={index}
+                  title={date.toDateString()}
+                  className={`w-3.5 h-3.5 rounded-[4px] ${workedOut ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'bg-[#1A1A1E]'} hover:ring-1 hover:ring-gray-500 cursor-pointer transition-all`}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-end gap-2 mt-4 text-[10px] text-[#52525B]">
+        <span>Less</span>
+        <div className="w-2.5 h-2.5 bg-[#1A1A1E] rounded-sm"></div>
+        <div className="w-2.5 h-2.5 bg-blue-500 rounded-sm"></div>
+        <span>More</span>
       </div>
     </div>
   );
@@ -80,17 +126,17 @@ function WeeklyCalendar({ workouts }) {
 
   return (
     <div className="bg-[#121214] p-5 rounded-3xl border border-[#27272A]">
-      <h3 className="text-sm font-medium mb-5 text-white">This Week</h3>
-      <div className="flex justify-between items-center px-1">
+      <h3 className="text-sm font-medium mb-5 text-white">Workouts This Week</h3>
+      <div className="flex justify-between items-center px-4">
         {daysOfWeek.map((day, index) => {
           const workedOut = hasWorkoutOnDay(index);
           const isToday = today.getDay() === index;
           return (
             <div key={day} className="flex flex-col items-center gap-3">
-              <span className={`text-[11px] font-medium ${isToday ? 'text-blue-400' : 'text-[#52525B]'}`}>
+              <span className={`text-xs font-medium ${isToday ? 'text-blue-400' : 'text-[#52525B]'}`}>
                 {day}
               </span>
-              {workedOut ? <CheckCircle2 className="w-6 h-6 text-blue-500" /> : <Circle className="w-6 h-6 text-[#27272A]" />}
+              {workedOut ? <CheckCircle2 className="w-7 h-7 text-blue-500" /> : <Circle className="w-7 h-7 text-[#27272A]" />}
             </div>
           );
         })}
@@ -209,7 +255,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen w-screen bg-[#09090B] font-sans text-[#EDEDED] selection:bg-blue-500/30 pb-12">
       
-      {/* Smaller Navbar */}
+      {/* Navbar */}
       <div className="w-full border-b border-[#27272A] bg-[#09090B]/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-[1300px] mx-auto px-6 py-2 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -222,15 +268,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Wider Container so it fills more screen space */}
       <div className="max-w-[1300px] mx-auto px-6 pt-6 space-y-6">
         
-        {/* Adjusted Hero Banner */}
+        {/* Hero Banner */}
         <div className="flex flex-col md:flex-row gap-6">
-          
           <div className="flex-1 bg-gradient-to-r from-[#18181B] to-[#121214] p-6 rounded-3xl border border-[#27272A] flex flex-col justify-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 via-emerald-500 to-purple-500 opacity-60"></div>
-            
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <h2 className="text-3xl font-bold mb-1 text-white">Welcome Back! 👋</h2>
@@ -249,15 +292,17 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2">
-            <Heatmap workouts={workouts} />
-          </div>
-          <div className="md:col-span-1">
-             <WeeklyCalendar workouts={workouts} />
-          </div>
+        {/* Full Width Heatmap Row */}
+        <div className="w-full">
+           <Heatmap workouts={workouts} />
         </div>
 
+        {/* Full Width Weekly Calendar Row */}
+        <div className="w-full">
+           <WeeklyCalendar workouts={workouts} />
+        </div>
+
+        {/* Charts Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-[#121214] p-5 rounded-3xl border border-[#27272A]">
             <h3 className="text-sm font-medium mb-4 text-white flex items-center gap-2">
@@ -306,6 +351,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Bottom Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-1 bg-[#121214] p-5 rounded-3xl border border-[#27272A]">
             <h3 className="text-sm font-medium mb-4 text-white">Quick Start</h3>
@@ -344,6 +390,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Recent Activity */}
         <div className="bg-[#121214] p-5 rounded-3xl border border-[#27272A]">
           <h3 className="text-sm font-medium mb-4 text-white">Recent Activity</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -378,6 +425,7 @@ export default function Dashboard() {
 
       </div>
 
+      {/* MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
           <div className="bg-[#121214] rounded-[28px] p-6 max-w-sm w-full shadow-2xl border border-[#27272A]">
