@@ -1,17 +1,17 @@
-# 1. Software Requirements Specification (SRS)
+# Software Requirements Specification (SRS)
 
-## 1.1 Purpose
+### Purpose
 This document defines the functional and non-functional requirements for the FitPulse application. It serves as a contract between the development team and the stakeholders to ensure all business needs are met.
 
-## 1.2 Problem Statement
+## Problem Statement
 Existing fitness applications suffer from feature bloat, aggressive monetization, and poor user retention. Users require a streamlined, ad-free platform that emphasizes habit formation over complex analytics.
 
-## 1.3 System Actors
+## System Actors
 1.  **Primary Actor (End User):** The individual utilizing the web interface to log workouts, view analytics, and receive AI-generated feedback.
 2.  **Secondary Actor (System Admin):** (Future Scope) Internal personnel responsible for monitoring system health, user metrics, and database maintenance.
 3.  **System:** The automated processes handling JWT authentication, database CRUD operations, and third-party AI API integrations.
 
-## 1.4 Functional Requirements (FR)
+## Functional Requirements (FR)
 
 | ID | Requirement | Priority |
 | :--- | :--- | :--- |
@@ -23,7 +23,7 @@ Existing fitness applications suffer from feature bloat, aggressive monetization
 | **FR-06** | The system shall integrate with the Google Gemini API to generate personalized coaching insights based on the user's last 10 workouts. | Medium |
 | **FR-07** | Users shall have the ability to delete or duplicate historical workout entries. | Medium |
 
-## 1.5 Non-Functional Requirements (NFR)
+## Non-Functional Requirements (NFR)
 
 | ID | Requirement | Category |
 | :--- | :--- | :--- |
