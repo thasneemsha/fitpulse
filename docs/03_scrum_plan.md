@@ -1,4 +1,4 @@
-# 3. Agile Project Management
+# Agile Project Management
 
 ### Methodology
 The project was executed using the **Scrum framework**. As a solo developer, I served as the Product Owner (defining the backlog) and Scrum Master (facilitating sprints). I tracked work via GitHub Projects, using a Kanban board (To Do, In Progress, In Review, Done).
