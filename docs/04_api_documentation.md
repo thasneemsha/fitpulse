@@ -1,4 +1,4 @@
-# 4. API Reference Guide
+# API Reference Guide
 
 ### Overview
 The FitPulse API is a RESTful service built with FastAPI. All endpoints return JSON. Protected routes require a valid JWT passed in the `Authorization` header as a Bearer token.
