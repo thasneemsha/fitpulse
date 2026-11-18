@@ -1,24 +1,34 @@
-#  Stakeholder Requirements Document (SRD)
+# 1. Software Requirements Specification (SRS)
 
-## 1. Project Overview
-**Problem:** Students and casual gym-goers often abandon fitness tracking due to complex, paywalled, or ad-heavy applications. 
-**Solution:** FitPulse is a free, AI-powered fitness tracker that focuses on long-term consistency (streaks/heatmaps) and provides automated, personalized coaching.
+## 1.1 Purpose
+This document defines the functional and non-functional requirements for the FitPulse application. It serves as a contract between the development team and the stakeholders to ensure all business needs are met.
 
-## 2. Actors
-*   **Primary Actor (User):** A student or gym member who logs workouts and views their progress.
-*   **Secondary Actor (System):** The backend API that processes JWT tokens, calculates analytics, and communicates with the Gemini AI API.
+## 1.2 Problem Statement
+Existing fitness applications suffer from feature bloat, aggressive monetization, and poor user retention. Users require a streamlined, ad-free platform that emphasizes habit formation over complex analytics.
 
-## 3. Functional Requirements (FR)
-*   **FR-1 (Authentication):** The system shall allow users to register and log in securely using JWT tokens and bcrypt password hashing.
-*   **FR-2 (Workout Logging):** Users shall be able to log workouts in three categories:
-    *   *Strength* (Sets, Reps, Weight)
-    *   *Cardio* (Distance, Time)
-    *   *Flexibility* (Duration)
-*   **FR-3 (Data Visualization):** The dashboard shall render a 365-day activity heatmap, a weekly calendar, and a donut chart for activity breakdown.
-*   **FR-4 (AI Coaching):** The system shall fetch the last 10 workouts and query the Google Gemini API to generate personalized fitness advice.
-*   **FR-5 (Data Management):** Users can delete past workouts or copy a workout to quickly log it again.
+## 1.3 System Actors
+1.  **Primary Actor (End User):** The individual utilizing the web interface to log workouts, view analytics, and receive AI-generated feedback.
+2.  **Secondary Actor (System Admin):** (Future Scope) Internal personnel responsible for monitoring system health, user metrics, and database maintenance.
+3.  **System:** The automated processes handling JWT authentication, database CRUD operations, and third-party AI API integrations.
 
-## 4. Non-Functional Requirements (NFR)
-*   **NFR-1 (Security):** Passwords must never be stored in plain text. Environment variables must be used for API keys and Database URLs.
-*   **NFR-2 (Responsiveness):** The UI must be fully mobile-responsive using Tailwind CSS breakpoints.
-*   **NFR-3 (Performance):** The backend must use SQLAlchemy connection pooling to handle database queries efficiently.
+## 1.4 Functional Requirements (FR)
+
+| ID | Requirement | Priority |
+| :--- | :--- | :--- |
+| **FR-01** | The system shall allow users to register and authenticate using email and hashed passwords (bcrypt). | High |
+| **FR-02** | The system shall issue JSON Web Tokens (JWT) upon successful login to authorize subsequent requests. | High |
+| **FR-03** | Users shall be able to log workouts categorized as Strength, Cardio, or Flexibility. | High |
+| **FR-04** | The database schema shall utilize JSON columns to support dynamic, category-specific workout metrics (e.g., `sets/reps/weight` vs. `distance/time`). | High |
+| **FR-05** | The dashboard shall render a 365-day consistency heatmap and a 4-week trend line chart. | Medium |
+| **FR-06** | The system shall integrate with the Google Gemini API to generate personalized coaching insights based on the user's last 10 workouts. | Medium |
+| **FR-07** | Users shall have the ability to delete or duplicate historical workout entries. | Medium |
+
+## 1.5 Non-Functional Requirements (NFR)
+
+| ID | Requirement | Category |
+| :--- | :--- | :--- |
+| **NFR-01** | All API communication must be encrypted via HTTPS. | Security |
+| **NFR-02** | Passwords must be salted and hashed using industry-standard algorithms; plain-text storage is strictly prohibited. | Security |
+| **NFR-03** | The frontend must be fully responsive, rendering correctly on viewports from 375px (Mobile) to 1920px (Desktop). | Performance / UI |
+| **NFR-04** | The backend must utilize SQLAlchemy connection pooling to prevent database exhaustion. | Performance |
+| **NFR-05** | The application must be deployed with zero recurring costs using the free tiers of Vercel, Render, and Neon. | Operational |
