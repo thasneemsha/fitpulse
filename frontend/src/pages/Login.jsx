@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import { HeartPulse, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -49,7 +49,6 @@ export default function Login() {
         
         <div className="flex flex-col items-center mb-8">
           <div className="bg-[#1A1A1E] p-3 rounded-2xl mb-4 shadow-inner border border-[#27272A]">
-            <HeartPulse className="w-8 h-8 text-blue-500" />
           </div>
           <h2 className="text-xl font-semibold tracking-tight text-white">
             {isRegister ? 'Create Account' : 'Welcome Back'}

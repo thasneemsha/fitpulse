@@ -267,7 +267,6 @@ export default function Dashboard() {
       <div className="w-full border-b border-[#27272A] bg-[#09090B] sticky top-0 z-40">
         <div className="max-w-[1100px] mx-auto px-6 py-3 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <HeartPulse className="text-blue-500 w-4 h-4" />
             <h1 className="text-sm font-bold text-white tracking-wide">FitPulse</h1>
           </div>
           <button onClick={() => { localStorage.removeItem('token'); navigate('/'); }} className="flex items-center gap-1.5 text-xs font-medium text-[#A1A1AA] hover:text-white transition-colors bg-[#1A1A1E] px-3 py-1.5 rounded-lg border border-[#27272A]">
@@ -284,7 +283,7 @@ export default function Dashboard() {
           
           <div className="flex items-center gap-6">
             <div>
-              <h2 className="text-2xl font-bold mb-1 text-white">Good Morning 👋</h2>
+              <h2 className="text-2xl font-bold mb-1 text-white">Good Morning </h2>
               <p className="text-sm text-[#A1A1AA]">Ready to hit your goals today?</p>
             </div>
             <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20 whitespace-nowrap">
