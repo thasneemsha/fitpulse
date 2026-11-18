@@ -81,7 +81,7 @@ function Heatmap({ workouts }) {
                 <div 
                   key={i} 
                   className="absolute" 
-                  style={{ left: `${m.columnIndex * 18}px` }} // 18px is the width of a column + gap
+                  style={{ left: `${m.columnIndex * 18}px` }}
                 >
                   {m.name}
                 </div>
@@ -394,10 +394,14 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Recent Activity */}
+        {/* Scrollable Recent Activity */}
         <div className="bg-[#121214] p-5 rounded-2xl border border-[#27272A]">
-          <h3 className="text-sm font-semibold mb-4 text-white">Recent Activity</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-sm font-semibold text-white">Recent Activity</h3>
+            <span className="text-[10px] text-[#52525B]">Scroll to see more</span>
+          </div>
+          
+          <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
             {workouts.map(w => (
               <div key={w.id} className="flex justify-between items-center bg-[#09090B] p-3 rounded-xl border border-[#27272A] group hover:border-[#3F3F46] transition-colors">
                 <div className="flex items-start gap-3 overflow-hidden">
